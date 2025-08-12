@@ -1,9 +1,9 @@
 env1:
     env_name: mvqa  
     env_config:
-        jsonl_path: /scratch/bc4211/projects/spati/qa/360_ct.jsonl
+        jsonl_path: /lustre/fsw/portfolios/nvr/users/ymingli/projects/spati/qa/360_ct.jsonl
         render_mode: vision
-        prompt_format: free_think
+        prompt_format: mvqa_mcq_multiround
         use_state_reward: false
     train_size: 178  
     test_size: 20
