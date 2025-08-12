@@ -1,13 +1,13 @@
 from typing import Dict, List, Tuple, Optional, Any
 from vagen.env.base.base_service import BaseService
-from vagen.env.spati.env import EmbodiedVstarEnv
-from vagen.env.spati.env_config import EmbodiedVstarEnvConfig
+from vagen.env.spati.env import SpatiEnv
+from vagen.env.spati.env_config import SpatiEnvConfig
 from vagen.server.serial import serialize_observation
-from vagen.env.spati.service_config import EmbodiedVstarServiceConfig
+from vagen.env.spati.service_config import SpatiServiceConfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-class EmbodiedVstarService(BaseService):
-    def __init__(self, config: EmbodiedVstarServiceConfig):
+class SpatiService(BaseService):
+    def __init__(self, config: SpatiServiceConfig):
         self.max_workers = config.max_workers
         self.environments = {}
         self.env_configs = {}
@@ -17,8 +17,8 @@ class EmbodiedVstarService(BaseService):
     def create_environments_batch(self, ids2configs: Dict[str, Any]) -> None:
         def create_single_env(env_id, config):
             env_config_dict = config.get('env_config', {})
-            env_config = EmbodiedVstarEnvConfig(**env_config_dict)
-            env = EmbodiedVstarEnv(env_config)
+            env_config = SpatiEnvConfig(**env_config_dict)
+            env = SpatiEnv(env_config)
             return env_id, (env, env_config)
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {executor.submit(create_single_env, env_id, config): env_id for env_id, config in ids2configs.items()}
@@ -60,7 +60,7 @@ class EmbodiedVstarService(BaseService):
                     print(f"Error resetting environment {env_id} after failure: {e}")
                     env.close()
                     config=self.env_configs[env_id]
-                    env = EmbodiedVstarEnv(config)
+                    env = SpatiEnv(config)
                     self.environments[env_id] = env
                     observation, info = env.reset()
                     done = True
