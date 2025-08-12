@@ -62,6 +62,24 @@ FORMAT_CONFIGS = {
             "<answer>D</answer>"
         ),
     },
+    "mvqa_mcq_multiround": {
+        "description": (
+            "Two-view video MCQ with multiple rounds. "
+            "You may first return only <think>...</think> for several rounds, "
+            "and in the final round you must return exactly one choice with <answer> tag."
+        ),
+        "format": "<think>...</think>  or  <answer>A|B|C|D</answer>",
+        "example": (
+            "Round 1:\n"
+            "[View 1] <view1>\n[View 2] <view2>\n"
+            "Q: Choose the relative angle.\nA) 60°\nB) 120°\nC) 30°\nD) 180°\n"
+            "<think>Initial hypothesis: motion directions suggest near-opposite views.</think>\n\n"
+            "Round 2:\n"
+            "<think>After comparing trajectories, 180° seems most plausible.</think>\n\n"
+            "Round 3:\n"
+            "<answer>D</answer>"
+        ),
+    },
 }
 
 
@@ -69,34 +87,19 @@ FORMAT_CONFIGS = {
 # 2) System prompt
 # -------------------------------
 def system_prompt(**kwargs):
-    """
-    Compose a global system instruction for the two-view MCQ task.
-
-    Args:
-        format (str): One of FORMAT_CONFIGS keys. Defaults to "mvqa_mcq".
-                      Controls whether examples show <think> or not.
-
-    Returns:
-        str: The system prompt shown to the model before turns.
-    """
-    fmt_key = kwargs.get("format", "mvqa_mcq")
+    fmt_key = kwargs.get("format", "mvqa_mcq_multiround")
     if fmt_key not in FORMAT_CONFIGS:
-        fmt_key = "mvqa_mcq"
-
-    # Base rules tailored for two-view MCQ with strict output constraint.
-    base = f"""You are answering a two-view video multiple-choice question (MCQ).
-You will receive two short videos captured from different viewpoints: <view1> and <view2>.
-Carefully compare motions, occlusions, and parallax patterns across both views to answer the question.
+        fmt_key = "mvqa_mcq_multiround"
+    base = """You are answering a two-view video MCQ across multiple rounds.
+In each round, you may either:
+- Deliberate: return only <think>...</think>, or
+- Submit: return exactly one option with <answer> tag (A/B/C/D), which ends the episode.
 
 Rules:
-1) You must return exactly one choice using the <answer> tag. The only valid outputs are:
-   <answer>A</answer> or <answer>B</answer> or <answer>C</answer> or <answer>D</answer>.
-2) Do NOT include extra text outside the specified format. No tool calls or code.
-3) If uncertain, select the most likely option.
-4) This is a single-step task; once you answer, the episode ends.
+1) The only valid final outputs are <answer>A</answer>, <answer>B</answer>, <answer>C</answer>, <answer>D</answer>.
+2) Do not include extra text outside the specified tags.
+3) If uncertain, choose the most likely option before the round limit.
 """
-
-    # Provide an inline example consistent with the chosen format.
     example = f"Example:\n{FORMAT_CONFIGS[fmt_key]['example']}"
     return base + "\n" + example
 
