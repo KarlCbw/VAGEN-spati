@@ -16,7 +16,7 @@ import os
 @dataclass
 class SpatiEnvConfig(BaseEnvConfig):
     env_name: str = "spati"
-    data_path: str = os.path.join(os.path.dirname(__file__), "datasets/mvqa/qa.jsonl")
+    data_path: str = os.path.join("/lustre/fsw/portfolios/nvr/users/ymingli/projects/spati/qa/360_ct.jsonl")
     render_mode: str = "vision"
 
     # NEW: use a multi-round prompt

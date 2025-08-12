@@ -62,6 +62,7 @@ FORMAT_CONFIGS = {
             "<answer>D</answer>"
         ),
     },
+    
     "mvqa_mcq_multiround": {
         "description": (
             "Two-view video MCQ with multiple rounds. "
