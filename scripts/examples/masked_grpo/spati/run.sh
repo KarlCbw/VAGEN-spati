@@ -8,7 +8,7 @@ set -e  # Exit immediately if a command exits with a non-zero status
 PORT=5000
 #read -p "Enter CUDA devices (default: 0,1,2,3): " CUDA_DEVICES
 #CUDA_DEVICES=${CUDA_DEVICES:-0,1,2,3}
-CUDA_DEVICES=0,1,2,3
+CUDA_DEVICES=0,1,2,3,4,5,6,7
 # Get the directory of the script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -24,23 +24,15 @@ echo "Using CUDA devices: $CUDA_DEVICES"
 # Create directories if they don't exist
 mkdir -p "data/$EXPERIMENT_NAME"
 # Configure server session with conda and environment variables
-source /share/apps/anaconda3/2020.07/etc/profile.d/conda.sh
-conda activate /scratch/bc4211/envs/vagen
+source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/bin/activate
+conda activate vagen
 export CUDA_VISIBLE_DEVICES=$CUDA_DEVICES
 export VLLM_ATTENTION_BACKEND=XFORMERS
 export PYTHONHASHSEED=0
-export HF_HOME=/scratch/bc4211/.cache/huggingface
+
 # Start the server
 cd $SCRIPT_DIR
 #python -m vagen.server.server server.port=$PORT &
-python -m vagen.server.server \
-  server.port=$PORT \
-  mvqa.max_workers=48 \
-  +mvqa.jsonl_path=/scratch/bc4211/projects/spati/qa/360_ct.jsonl \
-  +mvqa.prompt_format=free_think \
-  +mvqa.max_new_tokens=8 \
-  '+mvqa.stop_words=["\n"]' \
-  > server_$PORT.log 2>&1 &
 
 # Wait for server to start
 echo "Waiting for server to start on port $PORT..."
@@ -102,7 +94,7 @@ python3 -m vagen.trainer.main_ppo \
     trainer.logger=['console','wandb'] \
     trainer.project_name='vagen_new' \
     trainer.experiment_name=$EXPERIMENT_NAME \
-    trainer.n_gpus_per_node=4 \
+    trainer.n_gpus_per_node=8 \
     trainer.nnodes=1 \
     trainer.save_freq=10 \
     trainer.test_freq=5 \
