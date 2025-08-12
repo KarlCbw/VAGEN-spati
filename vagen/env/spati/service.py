@@ -87,6 +87,7 @@ class SpatiService(BaseService):
                 env_id, reward = future.result()
                 results[env_id] = reward
         return results
+    
     def get_system_prompts_batch(self, env_ids: List[str]) -> Dict[Any, str]:
         """Get system prompts for multiple environments"""
         results = {}

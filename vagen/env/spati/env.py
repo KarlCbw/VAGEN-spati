@@ -172,6 +172,10 @@ class SpatiEnv(BaseEnv):
 
         return self._render(init_obs=False), self.reward, done, self.info
 
+    def compute_reward(self) -> float:
+        """Return the accumulated trajectory reward."""
+        return float(self.total_reward)
+
     def system_prompt(self) -> str:
         """Return the system prompt for the model."""
         return system_prompt(format=self.config.prompt_format) + "\n" + \
