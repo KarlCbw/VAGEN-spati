@@ -1,9 +1,9 @@
 from typing import Dict, List, Tuple, Optional, Any
 from vagen.env.base.base_service import BaseService
-from vagen.env.mvqa.env import EmbodiedVstarEnv
-from vagen.env.mvqa.env_config import EmbodiedVstarEnvConfig
+from vagen.env.spati.env import EmbodiedVstarEnv
+from vagen.env.spati.env_config import EmbodiedVstarEnvConfig
 from vagen.server.serial import serialize_observation
-from vagen.env.mvqa.service_config import EmbodiedVstarServiceConfig
+from vagen.env.spati.service_config import EmbodiedVstarServiceConfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class EmbodiedVstarService(BaseService):
